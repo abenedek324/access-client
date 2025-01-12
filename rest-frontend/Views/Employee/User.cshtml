@@ -1,0 +1,113 @@
+﻿@model rest_frontend.Models.User 
+@{
+	var userId = Context.Session.GetString("user_id");
+	var login = Context.Session.GetString("fail");
+	int user_id = userId != null ? int.Parse(userId) : -1;
+	if (user_id < 1 || login == "true")
+	{
+		Context.Response.Redirect("/");
+	}
+}
+
+<div class="main">
+	<H1 style="text-align:center; margin-bottom:30px;">@(Model.LastName + " " + Model.FirstName)</H1>
+	<div class="maincontainer">
+		<div class="controlPanel">
+			<form asp-controller="Employee" asp-action="Update" class="empForm" method="post">
+				<p><b class="detailsB">Id:</b> @Model.Id </p> <input type="hidden" name="id" value="@Model.Id" />
+				<p><b class="detailsB">User név:</b> <input type="text" name="username" value="@Model.Username" placeholder="@Model.Username" /></p>
+				<p><b class="detailsB">Kártyaszám:</b> @Model.Card </p>
+				<p><b class="detailsB">Pin:</b> <input type="text" name="pin" value="@Model.Pin" placeholder="@Model.Pin" /></p>
+				<p><b class="detailsB">Jelszó:</b> 
+					<input type="text" name="password" value="@Model.Password" placeholder="@Model.Password" /></p>
+				<p><b class="detailsB">Szül. Dátum:</b> @Model.BirthDate.ToString("yyyy-MM-dd")</p>
+				<p>
+					<b class="detailsB">
+						Szerepkörök:
+					</b>
+					@{
+						bool selectedAdmin = false;
+						bool selectedEmployee = false;
+						bool selectedManager = false;
+						foreach(Role role in Model.Roles){
+							if (role.Name == "Admin") selectedAdmin = true;
+							if (role.Name == "Manager") selectedManager = true;
+							if (role.Name == "Employee") selectedEmployee = true;
+						}
+					}
+
+					<select name="roles">
+						@if(selectedAdmin) {<option value="Admin" selected>Admin</option>}
+						else
+						{
+							<option value="Admin">Admin</option>
+						}
+						@if (selectedManager)
+						{
+							<option value="Manager" selected>Manager</option>
+						}
+						else
+						{
+							<option value="Manager">Manager</option>
+						}
+						@if (selectedEmployee)
+						{
+							<option value="Employee" selected>Employee</option>
+						}
+						else
+						{
+							<option value="Employee" >Employee</option>
+						}
+					</select>
+					<p>
+						<b class="detailsB">
+							Lokációk:
+						</b> <br />
+						@{
+							bool checkedOffice= false;
+							bool checkedHQ = false;
+							@foreach (var item in Model.Employee.AuthorizedLocations)
+							{
+								if (item.Name=="Office") { checkedOffice = true; }
+								if (item.Name=="HQ") { checkedHQ = true; }
+							}
+						}
+						Office: <input type="checkbox" name="locationoffice" value="true" @(checkedOffice ? "checked" : "")/><br />
+
+						HQ:	<input type="checkbox" name="locationhq" value="true" @(checkedHQ ? "checked" : "") /><br />
+
+					</p>
+					<button class="direction" type="submit">Módosítás</button>
+			</form>
+			<form action="/Employee/Index" class="empForm" method="get">
+				<button type="submit" class="direction">Mégsem</button>
+			</form>
+		</div>
+		
+	</div>
+	<div class="maincontainer">
+	<div class="controlPanel" style="margin-top:30px; margin-left:auto, margin-right:auto;">
+		<h3>Belépés log</h3>
+
+		@foreach (Access access in Model.Employee.Accesses)
+		{
+
+			string direction = access.Direction.Name == "In" ? "Belépés" : "Kilépés";
+			string location = access.LocationId == 1 ? "HQ" : "Office";
+			<p id="toogleList" onclick="">
+
+				@access.AccessTime.ToString()
+			</p>
+
+			<ul id="accesList">
+				<li>@location</li>
+				<li>@direction</li>
+
+			</ul>
+		}
+			<form action="/Employee/Index" class="empForm" method="get">
+				<button type="submit" class="direction">Vissza</button>
+			</form>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,143 @@
+﻿@model List<rest_frontend.Models.User>
+@{
+	var userId = Context.Session.GetString("user_id");
+	var login = Context.Session.GetString("fail");
+	int user_id = userId != null ? int.Parse(userId) : -1;
+	if (user_id<1 || login =="true"){
+		Context.Response.Redirect("/");
+	}
+}
+
+<div class="main">
+	<H1 style="text-align:center;">Alkalmazottak</H1><br />
+	<p></p>
+	<div class="maincontainer">
+	<div class="notEnteredHolder">
+		
+		@if (Model == null) {
+			<h2>Nincs egyetlen dolgozó sem</h2>
+		}
+		else{
+			<h3>Nem belépett dolgozók</h3>
+			foreach (var user in Model){
+				if (user.Employee.Accesses.Count < 1) {
+					user.Employee.Accesses
+				.Add(new Access(user.Employee.Id, user.Employee.AuthorizedLocations[0].Id, DateTime.UtcNow, new AccessDirection("Unknown")));
+				}
+				if (user.Employee.Accesses.OrderByDescending(a => a.AccessTime).FirstOrDefault().Direction.Name=="Out" ||
+				user.Employee.Accesses.OrderByDescending(a => a.AccessTime).FirstOrDefault().Direction.Name == "Unknown")
+				{
+					<div class="empCard">
+						<p class="headerP"> @(user.LastName + " " + user.FirstName) </p>
+						<div class="detailsDiv">
+							<a href="@Url.Action("User", "Employee", new { id = user.Id })">
+								Id: @(user.Id)</a> <br />
+							Aktív-e: @(user.Employee.Active == true ? "Igen" : "Nem") <br />
+							Lokációk: <ul>
+								@foreach (var loc in user.Employee.AuthorizedLocations)
+								{
+									<li>@loc.Name</li>
+								}
+							</ul>
+							
+						</div>
+						<div class="buttonHolderP">
+							<form asp-controller="Employee" asp-action="Movement" class="empForm" method="post">
+								<input type="hidden" name="id" value="@user.Id" />
+								<input type="hidden" name="direction" value="In" />
+								<input type="hidden" name="location" value="@user.Employee.AuthorizedLocations[0].Name" />
+								<button class="directions" id="enterButton">Belépés</button>
+							</form>
+							<form asp-controller="Employee" asp-action="Movement" class="empForm" method="post">
+								<input type="hidden" name="id" value="@user.Id" />
+								<input type="hidden" name="direction" value="Out" />
+								<input type="hidden" name="location" value="@user.Employee.AuthorizedLocations[0].Name" />
+								<button class="directions" id="enterButton">Kilépés</button>
+							</form>
+							<form asp-controller="Employee" asp-action="Delete" class="empForm" method="post">
+								<input type="hidden" name="id" value="@user.Id" />
+								<button class="directions" id="enterButton">Törlés</button>
+							</form>
+						</div>
+					</div>
+				}
+				
+		}}
+	</div>
+	<div class="controlPanel">
+		<h3>Felhasználó hozzáadása</h3>
+		<form asp-controller="Employee" asp-action="AddUser" class="empForm" method="post">
+			<b class="detailsB">Vezetéknév:</b><input type="text" name="lastname" required /><br />
+			<b class="detailsB">Keresztnév:</b> <input type="text" name="firstname" required /><br />
+			<b class="detailsB">Születési dátum:</b> <input type="date" name="bdate" required /><br />
+			<b class="detailsB">Jelszó:</b> <input type="text" name="password"/><br />
+			<b class="detailsB">Pin:</b> <input type="text" name="password"/><br />
+			<p><b class="detailsB">Jogosultság:</b></p>
+			<select name="role" required>
+				<option value="Admin">Admin</option>
+				<option value="Manager">Manager</option>
+				<option value="Employee">Employee</option>
+			</select><br />
+			<p><b class="detailsB">Validáció:</b></p>
+			<select name="validation" required>
+				<option value="Card">Card</option>
+				<option value="Pin">Pin</option>
+				<option value="Password">Password</option>
+			</select><br /><br />
+			<p><b class="detailsB">Engedélyezett épületek:</b></p>
+			<b class="detailsB">Office: </b> <input type="checkbox" name="locationoffice" value="true"/><br />
+			<b class="detailsB">HQ: </b> <input type="checkbox" name="locationhq" value="true"/><br />
+			<p class="buttonHolderP">
+			<button class="directions" style="width:100%; margin-top:15px;" id="enterButton">Felvitel</button>
+			</p>
+		</form>
+	</div>
+	<div class="enteredHolder">
+		@if (Model == null)
+		{
+			<h2>Nem léteznek dolgozók</h2>
+		}
+		else
+		{
+			<h3>Belépett dolgozók</h3>
+			foreach (var user in Model)
+			{
+				if (user.Employee.Accesses.OrderByDescending(a => a.AccessTime).FirstOrDefault().Direction.Name == "In")
+				{<div class="empCard">
+					<p class="headerP"> @(user.FirstName + " " +user.LastName) </p>
+					<div class="detailsDiv">
+							<a href="@Url.Action("User", "Employee", new { id = user.Id })">
+								Id: @(user.Id)
+							</a> <br />
+							Aktív-e: @(user.Employee.Active == true ? "Igen" : "Nem") <br />
+						Lokációk: <ul>
+							@foreach (var loc in user.Employee.AuthorizedLocations)
+							{
+								<li>@loc.Name</li>
+							}
+						</ul>
+					</div>
+					<div class="buttonHolderP">
+							<form asp-controller="Employee" asp-action="Movement" class="empForm" method="post">
+								<input type="hidden" name="id" value="@user.Id" />
+								<input type="hidden" name="direction" value="In" />
+								<input type="hidden" name="location" value="@user.Employee.AuthorizedLocations[0].Name" />
+								<button class="directions" id="enterButton">Belépés</button>
+							</form>
+							<form asp-controller="Employee" asp-action="Movement" class="empForm" method="post">
+								<input type="hidden" name="id" value="@user.Id" />
+								<input type="hidden" name="direction" value="Out" />
+								<input type="hidden" name="location" value="@user.Employee.AuthorizedLocations[0].Name" />
+								<button class="directions" id="enterButton">Kilépés</button>
+							</form>
+							<form asp-controller="Employee" asp-action="Delete" class="empForm" method="post">
+								<input type="hidden" name="id" value="@user.Id" />
+								<button class="directions" id="enterButton">Törlés</button>
+							</form>
+					</div>
+				</div>}
+			}
+		}
+	</div>
+	</div>
+</div>
