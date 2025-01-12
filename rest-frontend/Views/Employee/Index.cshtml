@@ -39,15 +39,33 @@
 									<li>@loc.Name</li>
 								}
 							</ul>
-							
+								<p>Jogosultság: @user.Roles[0].Name </p>
 						</div>
 						<div class="buttonHolderP">
-							<form asp-controller="Employee" asp-action="Movement" class="empForm" method="post">
+								 @foreach(Location loc in user.Employee.AuthorizedLocations)
+									{
+										@(loc.Name+":") <form asp-controller="Employee" asp-action="Movement" class="empForm" method="post">
+										<input type="hidden" name="id" value="@user.Id" />
+										<input type="hidden" name="direction" value="In" />
+										<input type="hidden" name="location" value="@loc.Name" />
+										<button class="directions" id="enterButton">Belépés</button>
+									</form>
+
+									<br />}
+								
+							<!-- Office: <form asp-controller="Employee" asp-action="Movement" class="empForm" method="post">
 								<input type="hidden" name="id" value="@user.Id" />
 								<input type="hidden" name="direction" value="In" />
 								<input type="hidden" name="location" value="@user.Employee.AuthorizedLocations[0].Name" />
 								<button class="directions" id="enterButton">Belépés</button>
-							</form>
+							</form><br />
+							HQ: <form asp-controller="Employee" asp-action="Movement" class="empForm" method="post">
+									<input type="hidden" name="id" value="@user.Id" />
+									<input type="hidden" name="direction" value="In" />
+									
+									<input type="hidden" name="location" value="@user.Employee.AuthorizedLocations[0].Name" />
+									<button class="directions" id="enterButton">Belépés</button>
+									</form><br />-->
 							<form asp-controller="Employee" asp-action="Movement" class="empForm" method="post">
 								<input type="hidden" name="id" value="@user.Id" />
 								<input type="hidden" name="direction" value="Out" />
@@ -118,12 +136,17 @@
 						</ul>
 					</div>
 					<div class="buttonHolderP">
-							<form asp-controller="Employee" asp-action="Movement" class="empForm" method="post">
-								<input type="hidden" name="id" value="@user.Id" />
-								<input type="hidden" name="direction" value="In" />
-								<input type="hidden" name="location" value="@user.Employee.AuthorizedLocations[0].Name" />
-								<button class="directions" id="enterButton">Belépés</button>
-							</form>
+								@foreach (Location loc in user.Employee.AuthorizedLocations)
+								{
+									@(loc.Name + ":") <form asp-controller="Employee" asp-action="Movement" class="empForm" method="post">
+										<input type="hidden" name="id" value="@user.Id" />
+										<input type="hidden" name="direction" value="In" />
+										<input type="hidden" name="location" value="@loc.Name" />
+										<button class="directions" id="enterButton">Belépés</button>
+									</form>
+
+									<br />
+								}
 							<form asp-controller="Employee" asp-action="Movement" class="empForm" method="post">
 								<input type="hidden" name="id" value="@user.Id" />
 								<input type="hidden" name="direction" value="Out" />

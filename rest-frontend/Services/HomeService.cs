@@ -20,6 +20,7 @@ namespace rest_frontend.Services
             AuthorizateUser auth;
             int id;
             string username;
+
             try
             {
                 id = Int32.Parse(userdata);
@@ -30,13 +31,14 @@ namespace rest_frontend.Services
                 username = userdata;
                 auth = new AuthorizateUser(username,password, DateTime.Now);
             }
+
             var json = JsonSerializer.Serialize(auth);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
+
             try
             {
                 var response = await _httpClient.PostAsync("https://localhost:7124/api/login", content);
                 response.EnsureSuccessStatusCode();
-
                 int userId = -1;
                 var responseContent = await response.Content.ReadAsStringAsync();
                 userId = int.Parse(responseContent);

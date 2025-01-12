@@ -19,8 +19,9 @@ namespace rest_frontend.Controllers
         [HttpPost("movement")]
         public async Task<IActionResult> Movement([FromForm]int id, [FromForm] string direction, [FromForm] string location)
         {
-            if (direction != "In" && direction != "Out") return BadRequest("Wrong direction value");
+            if (direction != "In" && direction != "Out") return BadRequest("Not existing direction value");
             User user = await _employeeService.GetSingleUser(id);
+
             if ( user == null) return NotFound("Nincs ilyen dolgozó");
             
             try
@@ -49,14 +50,12 @@ namespace rest_frontend.Controllers
 
             if (locationoffice) 
             {
-                
                 locations.Add(office);
             }
             
 
             if (locationhq)
             {
-                
                 locations.Add(hq);
             }
             
@@ -128,14 +127,12 @@ namespace rest_frontend.Controllers
             user.BirthDate = bdate;
             user.Employee=new Employee(true, DateTime.UtcNow, locations);
             user.Employee.Accesses = null;
-            Console.WriteLine("Eddig megvagyok3");
             user.ValidationTypes = validationTypes;
             user.Roles = roles;
 
             var json = JsonSerializer.Serialize(user);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            Console.WriteLine(await content.ReadAsStringAsync());
-
+            
             await _employeeService.AddUser(user);
             return RedirectToAction("Index");
         }
