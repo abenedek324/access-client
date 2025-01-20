@@ -1,5 +1,7 @@
 ﻿@model rest_frontend.Models.User 
 @{
+	//Ellenőrizzük, hogy a webes felületen megtörtént-e sikeresen a belépés, ha nem, akkor visszairányítjuk a főoldalra
+	//A user adatokat az EmployeeServicetől kapjuk
 	var userId = Context.Session.GetString("user_id");
 	var login = Context.Session.GetString("fail");
 	int user_id = userId != null ? int.Parse(userId) : -1;
@@ -8,7 +10,7 @@
 		Context.Response.Redirect("/");
 	}
 }
-
+<!-- A pédányosított user alapaján kiírjuk a szükséges adatokat, ami módosítható azt placeholderbe tesszük.-->
 <div class="main">
 	<H1 style="text-align:center; margin-bottom:30px;">@(Model.LastName + " " + Model.FirstName)</H1>
 	<div class="maincontainer">
@@ -29,6 +31,7 @@
 						bool selectedAdmin = false;
 						bool selectedEmployee = false;
 						bool selectedManager = false;
+						//Az selected option beálltásához segédváltozókat használunk, így az aktuális szerep lesz a kiválaszott
 						foreach(Role role in Model.Roles){
 							if (role.Name == "Admin") selectedAdmin = true;
 							if (role.Name == "Manager") selectedManager = true;
@@ -66,6 +69,7 @@
 						@{
 							bool checkedOffice= false;
 							bool checkedHQ = false;
+							//A lekért épületek alapján segédváltozókkal beállítjuk a checkbox aktuális helyzetét
 							@foreach (var item in Model.Employee.AuthorizedLocations)
 							{
 								if (item.Name=="Office") { checkedOffice = true; }
@@ -83,17 +87,29 @@
 				<button type="submit" class="direction">Mégsem</button>
 			</form>
 		</div>
-		
+
 	</div>
 	<div class="maincontainer">
-	<div class="controlPanel" style="margin-top:30px; margin-left:auto, margin-right:auto;">
-		<h3>Belépés log</h3>
+		<div class="controlPanel" style="margin-top:30px; margin-left:auto, margin-right:auto;">
+			<h3>Belépés log</h3>
 
-		@foreach (Access access in Model.Employee.Accesses)
-		{
-
-			string direction = access.Direction.Name == "In" ? "Belépés" : "Kilépés";
-			string location = access.LocationId == 1 ? "HQ" : "Office";
+			@foreach (Access access in Model.Employee.Accesses)
+			{
+				//Kiiratjuk az irányokat az In, Out vagy egyéb érték alapján
+				string direction;
+				switch (access.Direction.Name)
+				{
+					case "In":
+						direction = "Belépés";
+						break;
+					case "Out":
+						direction = "Kilépés";
+						break;
+					default:
+						direction = "Ismeretlen";
+						break;
+				}
+				string location = access.LocationId == 1 ? "HQ" : "Office";
 			<p id="toogleList" onclick="">
 
 				@access.AccessTime.ToString()

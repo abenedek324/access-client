@@ -1,7 +1,5 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    //hibás bejelentkezési adatok esetén az oldalon maradunk és kirjuk, hogy hibásak az adatok
     string message = "";
     var loginFail= Context.Session.GetString("fail");
     if ( loginFail=="true"){
@@ -19,8 +17,8 @@
 <div class="maincontainer">
         
         <form asp-controller ="Home" asp-action="Login" class="empForm" method="post">
-            <input rype="text" name="userdata" /><br /><br />
-        <input rype="text" name="password" /><br /><br />
+        <input type="text" class="loginText" name="userdata" /><br />
+        <input type="text" class="loginText" name="password" /><br />
         <button class="directions">Belépés</button>
     </form>
 </div>

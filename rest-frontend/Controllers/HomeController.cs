@@ -23,12 +23,13 @@ namespace rest_frontend.Controllers
         public async Task<IActionResult> Login([FromForm] string userdata, [FromForm] string password)
         {
 
-            
+            //A megkapott From adatok alapján meghívjuk a HomeService Login metódusát
             int userId = await _homeService.Login(userdata, password);
             User user = new User();
             
             if (userId>=1)
             { 
+                //ha sikeres volt a kérés és létezik ilyen dolgozó, belépünk az Employee/Index oldalra
                 user = await _employeeService.GetSingleUser(userId);
                 HttpContext.Session.SetString("user_id", userId.ToString());
                 HttpContext.Session.SetString("fail", "false");
@@ -36,6 +37,8 @@ namespace rest_frontend.Controllers
             }
             else
             {
+                //ha nem volt sikeres a kérés visszalépünk a Home/Index oldalra
+                //(login oldal és Session alapjá kiírjuk, hogy hibás adatokat kaptunk)
                 HttpContext.Session.SetString("fail","true");
                 return View("Index");
             }

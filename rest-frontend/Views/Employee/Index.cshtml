@@ -1,5 +1,6 @@
 ﻿@model List<rest_frontend.Models.User>
 @{
+	//Ellenőrizzük, hogy a webes felületen megtörtént-e sikeresen a belépés, ha nem, akkor visszairányítjuk a főoldalra
 	var userId = Context.Session.GetString("user_id");
 	var login = Context.Session.GetString("fail");
 	int user_id = userId != null ? int.Parse(userId) : -1;
@@ -15,15 +16,19 @@
 	<div class="notEnteredHolder">
 		
 		@if (Model == null) {
+			//ha a model üres kiírjuk, hogy nincsenek dolgozók
 			<h2>Nincs egyetlen dolgozó sem</h2>
 		}
 		else{
+			//Listázzuk a nem belépett dolgozókat
 			<h3>Nem belépett dolgozók</h3>
+			//ha valakinek még nincs belépése őt is jelenítsük meg
 			foreach (var user in Model){
 				if (user.Employee.Accesses.Count < 1) {
 					user.Employee.Accesses
 				.Add(new Access(user.Employee.Id, user.Employee.AuthorizedLocations[0].Id, DateTime.UtcNow, new AccessDirection("Unknown")));
 				}
+				//Szűrjük, a legfrisebb belépést és az alapján a bal itt jelenik meg a nem belépett státusszal rendelkező user
 				if (user.Employee.Accesses.OrderByDescending(a => a.AccessTime).FirstOrDefault().Direction.Name=="Out" ||
 				user.Employee.Accesses.OrderByDescending(a => a.AccessTime).FirstOrDefault().Direction.Name == "Unknown")
 				{
@@ -39,33 +44,18 @@
 									<li>@loc.Name</li>
 								}
 							</ul>
-								<p>Jogosultság: @user.Roles[0].Name </p>
+							
 						</div>
+						<!--Megjelenítjük a Belépés, Kilépés és Törlés gombot. A be- és kilépéshez az Employeontroller Movement
+							metódusát hvjuk meg
+						-->
 						<div class="buttonHolderP">
-								 @foreach(Location loc in user.Employee.AuthorizedLocations)
-									{
-										@(loc.Name+":") <form asp-controller="Employee" asp-action="Movement" class="empForm" method="post">
-										<input type="hidden" name="id" value="@user.Id" />
-										<input type="hidden" name="direction" value="In" />
-										<input type="hidden" name="location" value="@loc.Name" />
-										<button class="directions" id="enterButton">Belépés</button>
-									</form>
-
-									<br />}
-								
-							<!-- Office: <form asp-controller="Employee" asp-action="Movement" class="empForm" method="post">
+							<form asp-controller="Employee" asp-action="Movement" class="empForm" method="post">
 								<input type="hidden" name="id" value="@user.Id" />
 								<input type="hidden" name="direction" value="In" />
 								<input type="hidden" name="location" value="@user.Employee.AuthorizedLocations[0].Name" />
 								<button class="directions" id="enterButton">Belépés</button>
-							</form><br />
-							HQ: <form asp-controller="Employee" asp-action="Movement" class="empForm" method="post">
-									<input type="hidden" name="id" value="@user.Id" />
-									<input type="hidden" name="direction" value="In" />
-									
-									<input type="hidden" name="location" value="@user.Employee.AuthorizedLocations[0].Name" />
-									<button class="directions" id="enterButton">Belépés</button>
-									</form><br />-->
+							</form>
 							<form asp-controller="Employee" asp-action="Movement" class="empForm" method="post">
 								<input type="hidden" name="id" value="@user.Id" />
 								<input type="hidden" name="direction" value="Out" />
@@ -83,6 +73,7 @@
 		}}
 	</div>
 	<div class="controlPanel">
+		<!--Admin control panel, dolgozó hozzáadása, a form az EmployeeController AddUser metódusát hvja meg-->
 		<h3>Felhasználó hozzáadása</h3>
 		<form asp-controller="Employee" asp-action="AddUser" class="empForm" method="post">
 			<b class="detailsB">Vezetéknév:</b><input type="text" name="lastname" required /><br />
@@ -120,6 +111,7 @@
 			<h3>Belépett dolgozók</h3>
 			foreach (var user in Model)
 			{
+				//A belépett dolgozók megjelenítése a jobb oldalon
 				if (user.Employee.Accesses.OrderByDescending(a => a.AccessTime).FirstOrDefault().Direction.Name == "In")
 				{<div class="empCard">
 					<p class="headerP"> @(user.FirstName + " " +user.LastName) </p>
@@ -135,18 +127,16 @@
 							}
 						</ul>
 					</div>
+							<!--Megjelenítjük a Belépés, Kilépés és Törlés gombot. A be- és kilépéshez az Employeontroller Movement
+									metódusát hvjuk meg
+								-->
 					<div class="buttonHolderP">
-								@foreach (Location loc in user.Employee.AuthorizedLocations)
-								{
-									@(loc.Name + ":") <form asp-controller="Employee" asp-action="Movement" class="empForm" method="post">
-										<input type="hidden" name="id" value="@user.Id" />
-										<input type="hidden" name="direction" value="In" />
-										<input type="hidden" name="location" value="@loc.Name" />
-										<button class="directions" id="enterButton">Belépés</button>
-									</form>
-
-									<br />
-								}
+							<form asp-controller="Employee" asp-action="Movement" class="empForm" method="post">
+								<input type="hidden" name="id" value="@user.Id" />
+								<input type="hidden" name="direction" value="In" />
+								<input type="hidden" name="location" value="@user.Employee.AuthorizedLocations[0].Name" />
+								<button class="directions" id="enterButton">Belépés</button>
+							</form>
 							<form asp-controller="Employee" asp-action="Movement" class="empForm" method="post">
 								<input type="hidden" name="id" value="@user.Id" />
 								<input type="hidden" name="direction" value="Out" />

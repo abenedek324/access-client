@@ -17,32 +17,39 @@ namespace rest_frontend.Controllers
         }
 
         [HttpPost("movement")]
+        //A ki és beléptetést kezeljük egy Post kérés nyomán
         public async Task<IActionResult> Movement([FromForm]int id, [FromForm] string direction, [FromForm] string location)
         {
-            if (direction != "In" && direction != "Out") return BadRequest("Not existing direction value");
+            //Kezeljük, hogy a belépett dolgozó még egyszer ne lépehessen be, vagy a kilépett ne léphessen ki
+            if (direction != "In" && direction != "Out") return BadRequest("Wrong direction value");
+            //Lekérünk egy dolgozót a user_id alapján, ha nem létezik hibát dobunk
             User user = await _employeeService.GetSingleUser(id);
-
             if ( user == null) return NotFound("Nincs ilyen dolgozó");
             
             try
             {
+                //A formból bekért adatok alapján létrehozzuk a belépést
                 await _employeeService.UpdateAccess(user, direction, location);
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
+                //Nem 2xx HTTP státuszkód esetén elutasítjuk a belépést
                 return BadRequest(ex.Message);
             }
         }
 
         [HttpPost("update")]
+        //Dolgozói adatok módosítása
         public async Task<IActionResult> Update([FromForm] int id, [FromForm] string pin,
             [FromForm] string password, [FromForm] string username,
             [FromForm] bool locationoffice, [FromForm] bool locationhq, [FromForm] string roles)
         {
+            //A formból kért id alapján megpróbáljuk példányosítani a usert
             User user = await _employeeService.GetSingleUser(id);
             if (user == null) return NotFound("Nincs ilyen dolgozó");
 
+            //A lekért user engedélyezett helyszíneinek a listáját töröljük, majd újra töltjük a checkboxban kijelöltekkel
             List<Location> locations = new List<Location>();
             Location hq = new Location("HQ");
             Location office = new Location("Office");
@@ -56,10 +63,11 @@ namespace rest_frontend.Controllers
 
             if (locationhq)
             {
-                locations.Add(hq);
+                 locations.Add(hq);
             }
             
             user.Employee.AuthorizedLocations= locations;
+            //A többi bekért adatot hozzárendeljük a dolgozó példányhoz
             user.Username = username;
             user.Password = password;
             user.Pin = pin;
@@ -67,6 +75,7 @@ namespace rest_frontend.Controllers
             
             try
             {
+                //Elküldjük a PUT kérést a szervernek
                 await _employeeService.UpdateUser(user);
                 return RedirectToAction("Index");
             }
@@ -81,6 +90,7 @@ namespace rest_frontend.Controllers
         {
             try
             {
+                //A formból kapott id alapján kérjük a dolgozó törlését a szervertől
                 await _employeeService.DeleteUser(id);
                 return RedirectToAction("Index");
             }
@@ -95,6 +105,7 @@ namespace rest_frontend.Controllers
             [FromForm] DateTime bdate, [FromForm] string password, [FromForm] string pin, [FromForm] string role,
             [FromForm] bool locationoffice, [FromForm] bool locationhq, [FromForm] string validation )
         {
+            //A formban bekért adatok alapján létrehozunk egy user példányt és elküldjük a Post kérést az API-nak
             List<Location> locations = new List<Location>();
 
             if (locationhq) {
@@ -130,9 +141,9 @@ namespace rest_frontend.Controllers
             user.ValidationTypes = validationTypes;
             user.Roles = roles;
 
+            //A kéréshez Json formátumra konvertáljuk a user példányt
             var json = JsonSerializer.Serialize(user);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            
             await _employeeService.AddUser(user);
             return RedirectToAction("Index");
         }
@@ -144,6 +155,8 @@ namespace rest_frontend.Controllers
 
         public async Task<IActionResult> User(int id)
         {
+            //Ha egy kifejezett user adatait akarjuk megnézni, lekérjük a GetSingleUser metódussal az adatait, és
+            //átírányítunk a user oldalra.
             User user = await _employeeService.GetSingleUser(id);
             return View(user);
         }
