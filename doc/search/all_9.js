@@ -1,0 +1,6 @@
+var searchData=
+[
+  ['id_0',['Id',['../classrest__frontend_1_1_models_1_1_access.html#a7e8d77fddf3213e2417b3a366b101795',1,'rest_frontend.Models.Access.Id'],['../classrest__frontend_1_1_models_1_1_authorizate_user.html#ad29c23b1e3e53f89e5fe7ce288a9a1ec',1,'rest_frontend.Models.AuthorizateUser.Id'],['../classrest__frontend_1_1_models_1_1_employee.html#a2d3da3a68dcd6106a4da3f70d83ced34',1,'rest_frontend.Models.Employee.Id'],['../classrest__frontend_1_1_models_1_1_location.html#a09c82a6c78aca5ac843bb4fba1e9d5e9',1,'rest_frontend.Models.Location.Id'],['../classrest__frontend_1_1_models_1_1_role.html#a62d3e66e54f559420fe930792dcb298c',1,'rest_frontend.Models.Role.Id'],['../classrest__frontend_1_1_models_1_1_user.html#aeaa8e1c0cc55d4cab920626ee984cdda',1,'rest_frontend.Models.User.Id'],['../classrest__frontend_1_1_models_1_1_validation_types.html#a6775c821ab60c76a209520355178baf6',1,'rest_frontend.Models.ValidationTypes.Id']]],
+  ['if_1',['if',['../_program_8cs.html#af2d0c02efe3fbc2d94e5b6e316777c4d',1,'Program.cs']]],
+  ['index_2',['Index',['../classrest__frontend_1_1_controllers_1_1_employee_controller.html#a68a01b707a5a6dc78db7830aed67d792',1,'rest_frontend.Controllers.EmployeeController.Index()'],['../classrest__frontend_1_1_controllers_1_1_home_controller.html#ab75fa9b1b71d6483a13d4ff438afebd9',1,'rest_frontend.Controllers.HomeController.Index()']]]
+];
