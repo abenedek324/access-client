@@ -1,7 +1,15 @@
 ﻿using System.Text.Json.Serialization;
 
+/*!
+ * A frontend részeinek modeljeit tartalmazó névtér
+ */
 namespace rest_frontend.Models
 {
+    /*!
+    * Az igazolási lehetőségeket definiáló osztály
+    \param Id int típusú azonosító szám
+    \param Name string típusú megnevezés
+    */
     public class ValidationTypes
     {
         [JsonPropertyName("id")]
@@ -12,6 +20,11 @@ namespace rest_frontend.Models
         public ValidationTypes() {
             
         }
+        /*!
+        *Az igazolási lehetőség meghatározása paraméterben kapott név alapján
+        \param Name
+        \return Pin, Card, vagy Password
+        */
         public ValidationTypes(string name)
         {
             Name = name;

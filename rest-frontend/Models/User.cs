@@ -1,9 +1,25 @@
 ﻿using System.Data;
 using System.Text.Json.Serialization;
 
-
+/*!
+ * A frontend részeinek modeljeit tartalmazó névtér
+ */
 namespace rest_frontend.Models
 {
+    /*!
+    * A felhasználót definiáló osztály
+    \param Id int típusú azonosító szám
+    \param Username string típusú felhasználónév
+    \param Password string típusú jelszó
+    \param Pin string típusú PIN kód
+    \param Card string típusú kártya azonosító
+    \param ValidationTypes lista típusú igazolási lehetőség
+    \param FirstName string típusú vezetésknév
+    \param Last Name streing típusú keresztnév
+    \param BirthDate DateTime típusú születési dátum
+    \param Employee Employee() típusú dolgozó
+    \param Roles lista típusú jogosultságok
+    */
     public class User
     {
         [JsonPropertyName("id")]

@@ -1,7 +1,16 @@
 ﻿using System.Text.Json.Serialization;
 
+/*!
+ * A frontend részeinek modeljeit tartalmazó névtér
+ */
 namespace rest_frontend.Models
 {
+    /*!
+    * A belépés helyét definiáló osztály
+    \param Id int típusú azonosító szám
+    \param Name string típusú helyszín azonosító
+    \param Address string típusú helyszín azonosító
+    */
     public class Location
     {
         [JsonPropertyName("id")]
@@ -17,6 +26,11 @@ namespace rest_frontend.Models
 
         }
 
+        /*!
+        *A helyszín meghatározása paraméterben kapott név alapján
+        \param Name
+        \return HQ vagy Office
+        */        
         public Location(string name)
         {
             switch (name) 
